@@ -38,7 +38,7 @@ class Flag
     #[ORM\CustomIdGenerator(class: 'App\Doctrine\Base58UuidGenerator')]
     private ?string $id = null;
 
-    #[ORM\Column(length: 255, nullable: false)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $fileUrl = null;
 
     #[Vich\UploadableField(mapping: 'flag_upload', fileNameProperty: 'fileName')]
