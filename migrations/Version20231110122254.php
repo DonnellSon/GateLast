@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20231109111241 extends AbstractMigration
+final class Version20231110122254 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -34,8 +34,9 @@ final class Version20231109111241 extends AbstractMigration
         $this->addSql('CREATE TABLE domaine (id VARCHAR(255) NOT NULL, title VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE domaine_invest (domaine_id VARCHAR(255) NOT NULL, invest_id VARCHAR(255) NOT NULL, INDEX IDX_E4E0EEA84272FC9F (domaine_id), INDEX IDX_E4E0EEA8C7065BD6 (invest_id), PRIMARY KEY(domaine_id, invest_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE evaluation (id INT AUTO_INCREMENT NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('CREATE TABLE flag (id VARCHAR(255) NOT NULL, file_url VARCHAR(255) NOT NULL, file_name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE flag (id VARCHAR(255) NOT NULL, file_url VARCHAR(255) DEFAULT NULL, file_name VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE gender (id VARCHAR(255) NOT NULL, title VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        $this->addSql('CREATE TABLE global_search (id INT AUTO_INCREMENT NOT NULL, query VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE image (id VARCHAR(255) NOT NULL, image_entity_id VARCHAR(255) DEFAULT NULL, UNIQUE INDEX UNIQ_C53D045F59A7A609 (image_entity_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE image_entity (id VARCHAR(255) NOT NULL, image_type VARCHAR(255) NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE invest (id VARCHAR(255) NOT NULL, company_id VARCHAR(255) DEFAULT NULL, title VARCHAR(255) NOT NULL, description LONGTEXT NOT NULL, need VARCHAR(255) NOT NULL, collected VARCHAR(255) NOT NULL, created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', INDEX IDX_EB095F86979B1AD6 (company_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -175,6 +176,7 @@ final class Version20231109111241 extends AbstractMigration
         $this->addSql('DROP TABLE evaluation');
         $this->addSql('DROP TABLE flag');
         $this->addSql('DROP TABLE gender');
+        $this->addSql('DROP TABLE global_search');
         $this->addSql('DROP TABLE image');
         $this->addSql('DROP TABLE image_entity');
         $this->addSql('DROP TABLE invest');

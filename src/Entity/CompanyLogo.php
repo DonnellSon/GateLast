@@ -48,7 +48,7 @@ class CompanyLogo
 
     #[ORM\Column]
     #[Groups(['users_read', 'posts_read'])]
-    private ?\DateTimeImmutable $UpdatedAt = null;
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[vich\UploadableField(mapping: 'company_logo_uri', fileNameProperty: 'fileName', size: 'fileSize')]
     private ?File $file = null;
@@ -70,7 +70,7 @@ class CompanyLogo
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
-        $this->UpdatedAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
     }
 
     #[ORM\PreFlush]
@@ -116,12 +116,12 @@ class CompanyLogo
 
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
-        return $this->UpdatedAt;
+        return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeImmutable $UpdatedAt): static
+    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
     {
-        $this->UpdatedAt = $UpdatedAt;
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

@@ -64,28 +64,28 @@ class Company extends Author
         'message' => 'ce champ est obligatoire'
     ])]
     #[Groups(['company_read', 'invest_read','job_offers_read'])]
-    private ?string $Name = null;
+    private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank([
         'message' => 'ce champ est obligatoire'
     ])]
     #[Groups(['company_read', 'invest_read','job_offers_read'])]
-    private ?string $Adress = null;
+    private ?string $adress = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank([
         'message' => 'ce champ est obligatoire'
     ])]
     #[Groups(['company_read', 'invest_read','job_offers_read'])]
-    private ?string $Pays = null;
+    private ?string $pays = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank([
         'message' => 'ce champ est obligatoire'
     ])]
     #[Groups(['company_read', 'invest_read','job_offers_read'])]
-    private ?string $NifStat = null;
+    private ?string $nifStat = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Groups(['company_read', 'invest_read'])]
@@ -115,7 +115,7 @@ class Company extends Author
 
     #[ORM\ManyToMany(targetEntity: Domaine::class, inversedBy: 'companies')]
     #[Groups(['company_read', 'invest_read','job_offers_read'])]
-    private Collection $Domaine;
+    private Collection $domaine;
 
     #[ORM\OneToMany(mappedBy: 'Company', targetEntity: CompanyLogo::class, orphanRemoval: true)]
     #[Groups(['users_read', 'posts_read', 'image_read', 'company_read', 'invest_read'])]
@@ -143,54 +143,54 @@ class Company extends Author
 
     public function __construct()
     {
-        $this->Domaine = new ArrayCollection();
+        $this->domaine = new ArrayCollection();
         $this->companyLogo = new ArrayCollection();
     }
 
     public function getName(): ?string
     {
-        return $this->Name;
+        return $this->name;
     }
 
-    public function setName(string $Name): static
+    public function setName(string $name): static
     {
-        $this->Name = $Name;
+        $this->name = $name;
 
         return $this;
     }
 
     public function getAdress(): ?string
     {
-        return $this->Adress;
+        return $this->adress;
     }
 
-    public function setAdress(string $Adress): static
+    public function setAdress(string $adress): static
     {
-        $this->Adress = $Adress;
+        $this->adress = $adress;
 
         return $this;
     }
 
     public function getPays(): ?string
     {
-        return $this->Pays;
+        return $this->pays;
     }
 
-    public function setPays(string $Pays): static
+    public function setPays(string $pays): static
     {
-        $this->Pays = $Pays;
+        $this->pays = $pays;
 
         return $this;
     }
 
     public function getNifStat(): ?string
     {
-        return $this->NifStat;
+        return $this->nifStat;
     }
 
-    public function setNifStat(string $NifStat): static
+    public function setNifStat(string $nifStat): static
     {
-        $this->NifStat = $NifStat;
+        $this->nifStat = $nifStat;
 
         return $this;
     }
@@ -260,13 +260,13 @@ class Company extends Author
      */
     public function getDomaine(): Collection
     {
-        return $this->Domaine;
+        return $this->domaine;
     }
 
     public function addDomaine(Domaine $domaine): static
     {
-        if (!$this->Domaine->contains($domaine)) {
-            $this->Domaine->add($domaine);
+        if (!$this->domaine->contains($domaine)) {
+            $this->domaine->add($domaine);
         }
 
         return $this;
@@ -274,7 +274,7 @@ class Company extends Author
 
     public function removeDomaine(Domaine $domaine): static
     {
-        $this->Domaine->removeElement($domaine);
+        $this->domaine->removeElement($domaine);
 
         return $this;
     }

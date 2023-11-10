@@ -21,7 +21,7 @@ class CompanySize
 
     #[ORM\Column(length: 255)]
     #[Groups(['company_read', 'invest_read'])]
-    private ?string $Size = null;
+    private ?string $size = null;
 
     #[ORM\OneToMany(mappedBy: 'companySize', targetEntity: Company::class)]
     private Collection $company;
@@ -38,12 +38,12 @@ class CompanySize
 
     public function getSize(): ?string
     {
-        return $this->Size;
+        return $this->size;
     }
 
-    public function setSize(string $Size): static
+    public function setSize(string $size): static
     {
-        $this->Size = $Size;
+        $this->size = $size;
 
         return $this;
     }
