@@ -8,72 +8,52 @@ use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Dotenv\Dotenv;
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\Controller\InvestPictureController;
 use App\Repository\InvestPictureRepository;
 use ApiPlatform\Metadata\Post as MetadataPost;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
-
+#[ORM\HasLifecycleCallbacks]
 #[ORM\Entity(repositoryClass: InvestPictureRepository::class)]
-#[HasLifecycleCallbacks]
 #[ApiResource(
     operations:[
         new Get(),
+        new GetCollection(),
         new Put(),
         new Patch(),
         new MetadataPost(
             controller: InvestPictureController::class,
-            deserialize: false,
+            deserialize: false
         )
     ]
 )]
-
 #[Vich\Uploadable]
-
 class InvestPicture
 {
     #[ORM\Id]
+    #[ORM\Column(type: "string", unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\Column(type: 'string', unique:true)]
     #[ORM\CustomIdGenerator(class: 'App\Doctrine\Base58UuidGenerator')]
     private ?string $id = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['users_read', 'posts_read','invest_read'])]
+    #[ORM\Column(length: 255, nullable:false)]
     private ?string $fileUrl = null;
 
-    #[ORM\Column]
-    #[Groups(['users_read', 'posts_read'])]
-    private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column]
-    #[Groups(['users_read', 'posts_read'])]
-    private ?\DateTimeImmutable $updatedAt = null;
-
-    #[vich\UploadableField(mapping: 'invest_picture_upload', fileNameProperty: 'fileName', size: 'fileSize')]
+    #[Vich\UploadableField(mapping: 'invest_picture_upload', fileNameProperty: 'fileName')]
     private ?File $file = null;
 
     #[ORM\Column(length: 255)]
     private ?string $fileName = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $fileSize = null;
-
-    #[ORM\ManyToOne(inversedBy: 'InvestPicture')]
-    private ?Investissement $investissement = null;
-
-    public function __construct()
-    {
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
-    }
+    #[ORM\ManyToOne(inversedBy: 'investPictures')]
+    private ?Invest $invest = null;
 
     #[ORM\PreFlush]
     public function generateFileUrl(): ?string
     {
-        if ($this->getFileName()) {
+        if ($this->getFileName()) 
+        {
             $dotenv = new Dotenv();
             $dotenv->load(__DIR__ . '/../../.env');
             $this->setFileUrl($_ENV['SITE_DOMAIN'] . '/upload/img/invest/' . $this->getFileName());
@@ -98,31 +78,6 @@ class InvestPicture
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(\DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-
     public function getFile(): ?File
     {
         return $this->file;
@@ -134,7 +89,7 @@ class InvestPicture
 
         return $this;
     }
-    
+
     public function getFileName(): ?string
     {
         return $this->fileName;
@@ -147,36 +102,17 @@ class InvestPicture
         return $this;
     }
 
-    /**
-     * Get the value of FileSize
-     */ 
-    public function getFileSize()
+    public function getInvest(): ?Invest
     {
-        return $this->fileSize;
+        return $this->invest;
     }
 
-    /**
-     * Set the value of FileSize
-     *
-     * @return  self
-     */ 
-    public function setFileSize($fileSize)
+    public function setInvest(?Invest $invest): static
     {
-        $this->fileSize = $fileSize;
+        $this->invest = $invest;
 
         return $this;
     }
 
-    public function getInvestissement(): ?Investissement
-    {
-        
-        return $this->investissement;
-    }
-
-    public function setInvestissement(?Investissement $investissement): static
-    {
-        $this->investissement = $investissement;
-
-        return $this;
-    }
+   
 }

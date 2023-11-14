@@ -6,98 +6,87 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Delete;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Flex\Path as FlexPath;
 use ApiPlatform\Metadata\ApiFilter;
+use App\Controller\InvestController;
+use App\Repository\InvestRepository;
 use ApiPlatform\Metadata\ApiResource;
-use Symfony\Component\Filesystem\Path;
 use ApiPlatform\Metadata\GetCollection;
-use App\Controller\InvestGetController;
-use App\Filter\InvestCustomsSearchFilter;
-use App\Controller\CreateInvestController;
 use Doctrine\Common\Collections\Collection;
-use App\Controller\GetInvestmentsController;
-use App\Repository\InvestissementRepository;
 use ApiPlatform\Metadata\Post as MetadataPost;
-use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\Common\Collections\ArrayCollection;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: InvestissementRepository::class)]
-#[HasLifecycleCallbacks]
+#[ORM\Entity(repositoryClass: InvestRepository::class)]
 #[ApiResource(
-    normalizationContext: [
+     normalizationContext: [
         'groups' => ['invest_read']
     ],
     operations: [
-        new GetCollection(),
         new Get(),
-        // new Get(
-        //     controller: GetInvestmentsController::class,
-        // ),
+        new GetCollection(),
         new Put(),
         new Patch(),
         new MetadataPost(
-            controller: CreateInvestController::class,
+            controller: InvestController::class,
             deserialize: false
         ),
+        new Delete()
     ]
 )]
-class Investissement
+#[ApiFilter(SearchFilter::class, properties: ["title" => "partial", 
+"description" => "partial",
+"need" => "partial",
+"domaine.title" => "partial",
+"company.name" => "partial",
+"company.pays" => "partial",
+"collected" => "partial"])]
+class Invest
 {
     #[ORM\Id]
     #[ORM\Column(type: "string", unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'App\Doctrine\Base58UuidGenerator')]
-    #[Groups(['company_read', 'invest_read'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company_read', 'invest_read'])]
+    #[Groups(['invest_read'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    #[Assert\NotBlank([
-        'message' => 'ce champ est obligatoire'
-    ])]
-    #[Groups(['company_read', 'invest_read'])]
+    #[Groups(['invest_read'])]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank([
-        'message' => 'ce champ est obligatoire'
-    ])]
-    #[Groups(['company_read', 'invest_read'])]
+    #[Groups(['invest_read'])]
     private ?string $need = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank([
-        'message' => 'ce champ est obligatoire'
-    ])]
-    #[Groups(['company_read', 'invest_read'])]
+    #[Groups(['invest_read'])]
     private ?string $collected = null;
 
-    #[ORM\ManyToMany(targetEntity: Domaine::class, mappedBy: 'Invest')]
-    #[ORM\JoinColumn(name: "domaine-invest")]
-    #[Groups(['company_read', 'invest_read'])]
+    #[ORM\Column]
+    #[Groups(['invest_read'])]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\ManyToMany(targetEntity: Domaine::class, mappedBy: 'invest', cascade: ['persist'])]
+    #[Groups(['invest_read'])]
     private Collection $domaines;
 
-    #[ORM\ManyToOne(targetEntity:Author::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['posts_read','image_read', 'invest_read'])]
-    private ?Author $author = null;
+    #[ORM\ManyToOne(inversedBy: 'invest')]
+    #[Groups(['invest_read'])]
+    private ?Company $company = null;
 
-    #[ORM\OneToMany(mappedBy: 'investissement', targetEntity: InvestPicture::class)]
-    #[Groups(['image_read', 'invest_read'])]
-    private Collection $InvestPicture;
-
+    #[ORM\OneToMany(mappedBy: 'invest', targetEntity: InvestPicture::class)]
+    private Collection $investPictures;
 
     public function __construct()
     {
+        $this->createdAt = new \DateTimeImmutable();
         $this->domaines = new ArrayCollection();
-        $this->InvestPicture = new ArrayCollection();
+        $this->investPictures = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -153,6 +142,17 @@ class Investissement
         return $this;
     }
 
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
 
     /**
      * @return Collection<int, Domaine>
@@ -181,14 +181,14 @@ class Investissement
         return $this;
     }
 
-    public function getAuthor(): ?Author
+    public function getCompany(): ?Company
     {
-        return $this->author;
+        return $this->company;
     }
 
-    public function setAuthor(?Author $author): static
+    public function setCompany(?Company $company): static
     {
-        $this->author = $author;
+        $this->company = $company;
 
         return $this;
     }
@@ -196,16 +196,16 @@ class Investissement
     /**
      * @return Collection<int, InvestPicture>
      */
-    public function getInvestPicture(): Collection
+    public function getInvestPictures(): Collection
     {
-        return $this->InvestPicture;
+        return $this->investPictures;
     }
 
     public function addInvestPicture(InvestPicture $investPicture): static
     {
-        if (!$this->InvestPicture->contains($investPicture)) {
-            $this->InvestPicture->add($investPicture);
-            $investPicture->setInvestissement($this);
+        if (!$this->investPictures->contains($investPicture)) {
+            $this->investPictures->add($investPicture);
+            $investPicture->setInvest($this);
         }
 
         return $this;
@@ -213,14 +213,15 @@ class Investissement
 
     public function removeInvestPicture(InvestPicture $investPicture): static
     {
-        if ($this->InvestPicture->removeElement($investPicture)) {
-            if ($investPicture->getInvestissement() === $this) {
-                $investPicture->setInvestissement(null);
+        if ($this->investPictures->removeElement($investPicture)) {
+            // set the owning side to null (unless already changed)
+            if ($investPicture->getInvest() === $this) {
+                $investPicture->setInvest(null);
             }
         }
 
         return $this;
     }
 
-   
+ 
 }

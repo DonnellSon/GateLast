@@ -17,25 +17,25 @@ class Domaine
     #[ORM\Column(type: "string", unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'App\Doctrine\Base58UuidGenerator')]
-    #[Groups(['company_read','invest_read','job_offers_read'])]
     private ?string $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['company_read','invest_read','job_offers_read'])]
+    #[Groups(['company_read','invest_read'])]
     private ?string $title = null;
-
-    #[ORM\ManyToMany(targetEntity: Investissement::class, inversedBy: 'domaines')]
-    #[ORM\JoinColumn(nullable:false, onDelete:"CASCADE")]
-    private Collection $Invest;
 
     #[ORM\ManyToMany(targetEntity: Company::class, mappedBy: 'Domaine')]
     #[ORM\JoinColumn(nullable:false, onDelete:"CASCADE")]
     private Collection $companies;
 
+    #[ORM\ManyToMany(targetEntity: Invest::class, inversedBy: 'domaines')]
+    private Collection $invest;
+
+    
+
     public function __construct()
     {
-        $this->Invest = new ArrayCollection();
         $this->companies = new ArrayCollection();
+        $this->invest = new ArrayCollection();
     }
 
 
@@ -56,30 +56,7 @@ class Domaine
         return $this;
     }
 
-    /**
-     * @return Collection<int, Investissement>
-     */
-    public function getInvest(): Collection
-    {
-        return $this->Invest;
-    }
-
-    public function addInvest(Investissement $invest): static
-    {
-        if (!$this->Invest->contains($invest)) {
-            $this->Invest->add($invest);
-        }
-
-        return $this;
-    }
-
-    public function removeInvest(Investissement $invest): static
-    {
-        $this->Invest->removeElement($invest);
-
-        return $this;
-    }
-
+    
     /**
      * @return Collection<int, Company>
      */
@@ -103,6 +80,30 @@ class Domaine
         if ($this->companies->removeElement($company)) {
             $company->removeDomaine($this);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Invest>
+     */
+    public function getInvest(): Collection
+    {
+        return $this->invest;
+    }
+
+    public function addInvest(Invest $invest): static
+    {
+        if (!$this->invest->contains($invest)) {
+            $this->invest->add($invest);
+        }
+
+        return $this;
+    }
+
+    public function removeInvest(Invest $invest): static
+    {
+        $this->invest->removeElement($invest);
 
         return $this;
     }
