@@ -4,9 +4,11 @@ namespace App\Entity;
 
 use App\Entity\Author;
 use App\Entity\Domaine;
+use App\Entity\Evaluation;
 use App\Entity\CompanyLogo;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Link;
 use Doctrine\DBAL\Types\Types;
 use ApiPlatform\Metadata\Patch;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,7 +16,6 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CompanyRepository;
 use ApiPlatform\Metadata\GetCollection;
-use ApiPlatform\Metadata\Link;
 use App\Controller\CompanyGetController;
 use App\Filter\InvestCustomsSearchFilter;
 use App\Controller\CreateCompanyController;
@@ -140,11 +141,18 @@ class Company extends Author
     #[Groups(['company_read', 'invest_read'])]
     private ?CompanyType $companyType = null;
 
+    // #[ORM\ManyToMany(targetEntity:Evaluation::class)]
+    // #[ORM\JoinTable(name:"company_evaluation")]
+    // #[ORM\JoinColumn(name:"company_id", referencedColumnName:"id")]
+    // #[InverseJoinColumn(name:"evaluation_id", referencedColumnName:"id")]
+    // private $evaluations;
+
 
     public function __construct()
     {
         $this->Domaine = new ArrayCollection();
         $this->companyLogo = new ArrayCollection();
+        $this->evaluations = new ArrayCollection();
     }
 
     public function getName(): ?string
@@ -365,6 +373,30 @@ class Company extends Author
 
         return $this;
     }
+
+    // /**
+    //  * @return Collection|Evaluation[]
+    //  */
+    // public function getEvaluations(): Collection
+    // {
+    //     return $this->evaluations;
+    // }
+
+    // public function addEvaluation(Evaluation $evaluation): self
+    // {
+    //     if (!$this->evaluations->contains($evaluation)) {
+    //         $this->evaluations[] = $evaluation;
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function removeEvaluation(Evaluation $evaluation): self
+    // {
+    //     $this->evaluations->removeElement($evaluation);
+
+    //     return $this;
+    // }
 }
 
 

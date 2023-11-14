@@ -41,6 +41,7 @@ security:
         - { path: ^/api/login_check, roles: PUBLIC_ACCESS }
         - { path: ^/api/users,       roles: PUBLIC_ACCESS, methods: [POST,GET] }
         - { path: ^/api/companies,       roles: ROLE_USER, methods: [POST,PUT,DELETE,PATCH] }
+        - { path: ^/api/evaluations,       roles: ROLE_USER, methods: [POST,PUT,DELETE,PATCH] }
         - { path: '^/api/discussions/{id}/messages', roles: 'ROLE_USER' }
         - { path: ^/api/discussions,       roles: ROLE_USER}
         - { path: ^/api/messages,       roles: ROLE_USER}

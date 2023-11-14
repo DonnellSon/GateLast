@@ -46,7 +46,7 @@ abstract class Author
     #[ORM\Column(type: "string", unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'App\Doctrine\Base58UuidGenerator')]
-    #[Groups(['posts_read','image_read','discu_read','users_read', 'invest_read', 'company_read', 'ct_read','contact_read','msg_read','job_offers_read'])]
+    #[Groups(['posts_read','image_read','discu_read','users_read', 'invest_read', 'company_read', 'ct_read','contact_read','msg_read','job_offers_read','eval_read','author_read','comment_read','reply_read'])]
     private ?string $id = null;
 
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: Post::class, orphanRemoval: true)]
@@ -71,6 +71,9 @@ abstract class Author
     #[ORM\OneToMany(mappedBy: 'author', targetEntity: JobOffer::class)]
     private Collection $jobOffers;
 
+    #[ORM\OneToMany(mappedBy: 'author', targetEntity: Evaluation::class, orphanRemoval: true)]
+    private Collection $evaluations;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
@@ -80,6 +83,7 @@ abstract class Author
         $this->sentRequests = new ArrayCollection();
         $this->receivedRequests = new ArrayCollection();
         $this->jobOffers = new ArrayCollection();
+        $this->evaluations = new ArrayCollection();
     }
 
     public function getId(): ?string
@@ -311,6 +315,36 @@ abstract class Author
             // set the owning side to null (unless already changed)
             if ($jobOffer->getAuthor() === $this) {
                 $jobOffer->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Evaluation>
+     */
+    public function getEvaluations(): Collection
+    {
+        return $this->evaluations;
+    }
+
+    public function addEvaluation(Evaluation $evaluation): static
+    {
+        if (!$this->evaluations->contains($evaluation)) {
+            $this->evaluations->add($evaluation);
+            $evaluation->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvaluation(Evaluation $evaluation): static
+    {
+        if ($this->evaluations->removeElement($evaluation)) {
+            // set the owning side to null (unless already changed)
+            if ($evaluation->getAuthor() === $this) {
+                $evaluation->setAuthor(null);
             }
         }
 

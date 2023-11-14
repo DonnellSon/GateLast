@@ -51,7 +51,7 @@ class User extends Author implements UserInterface, PasswordAuthenticatedUserInt
     #[Assert\Email(
         message: '{{ value }} n\'est pas une adresse email valide !',
     )]
-    #[Groups(['users_read','discu_read','users_write','contact_read'])]
+    #[Groups(['users_read','discu_read','contact_read','eval_read'])]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -72,11 +72,11 @@ class User extends Author implements UserInterface, PasswordAuthenticatedUserInt
     #[Assert\NotBlank([
         'message' => 'Veillez entrer votre nom !'
     ])]
-    #[Groups(['users_read', 'posts_read','image_read','discu_read','msg_read','contact_read','invest_read'])]
+    #[Groups(['users_read', 'posts_read','image_read','discu_read','msg_read','contact_read','invest_read','eval_read','author_read','comment_read','reply_read'])]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['users_read', 'posts_read','image_read','discu_read','msg_read','contact_read','invest_read'])]
+    #[Groups(['users_read', 'posts_read','image_read','discu_read','msg_read','contact_read','invest_read','eval_read','author_read','comment_read','reply_read'])]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 255,nullable:true)]
@@ -97,7 +97,7 @@ class User extends Author implements UserInterface, PasswordAuthenticatedUserInt
     private Collection $profilePictures;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    #[Groups(['users_read', 'posts_read','image_read','discu_read','msg_read','invest_read'])]
+    #[Groups(['users_read', 'posts_read','image_read','discu_read','msg_read','invest_read','comment_read','author_read','profile_pic_read','reply_read'])]
     private ?ProfilePicture $activeProfilePicture = null;
 
     #[ORM\Column(length: 255, nullable: true)]

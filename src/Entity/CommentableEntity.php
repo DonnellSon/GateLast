@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\AuthorRepository;
 use ApiPlatform\Metadata\ApiResource;
 use Doctrine\Common\Collections\Collection;
+use App\Repository\CommentableEntityRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -23,7 +24,7 @@ abstract class CommentableEntity
     #[ORM\Column(type: "string", unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'App\Doctrine\Base58UuidGenerator')]
-    #[Groups(['posts_read','image_read'])]
+    #[Groups(['posts_read','image_read','eval_read'])]
     public ?string $id = null;
 
     #[ORM\OneToMany(mappedBy: 'commentable', targetEntity: Comment::class, orphanRemoval: true)]

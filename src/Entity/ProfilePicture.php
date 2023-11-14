@@ -23,9 +23,9 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 #[ORM\Entity(repositoryClass: ProfilePictureRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 #[ApiResource(
-    // normalizationContext: [
-    //     'groups' => ['profile_pic_read']
-    // ],
+    normalizationContext: [
+        'groups' => ['profile_pic_read']
+    ],
     operations: [
         new Get(),
         new GetCollection(),
@@ -44,11 +44,11 @@ class ProfilePicture
     #[ORM\Column(type: "string", unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'App\Doctrine\Base58UuidGenerator')]
-    #[Groups(['users_read','posts_read','invest_read'])]
+    #[Groups(['users_read','posts_read','invest_read','comment_read','author_read','profile_pic_read','image_read'])]
     public ?string $id = null;
 
     #[ORM\Column(length: 255, nullable: false)]
-    #[Groups(['msg_read','users_read','posts_read','discu_read','invest_read'])]
+    #[Groups(['msg_read','users_read','posts_read','discu_read','invest_read','comment_read','author_read','profile_pic_read','image_read'])]
     private ?string $fileUrl = null;
 
     #[ORM\Column]

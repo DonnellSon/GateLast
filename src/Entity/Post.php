@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Author;
 use App\Entity\Thumbnail;
+use App\Entity\Evaluation;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Put;
 use Doctrine\DBAL\Types\Types;
@@ -63,7 +64,7 @@ class Post extends CommentableEntity
 
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['posts_read'])]
+    #[Groups(['posts_read','eval_read'])]
     private ?string $content = null;
 
     #[ORM\Column]
@@ -82,12 +83,22 @@ class Post extends CommentableEntity
     #[Groups(['posts_read'])]
     private ?Author $author = null;
 
+    #[ORM\OneToMany(mappedBy: 'post', targetEntity: PostEvaluation::class, orphanRemoval: true)]
+    #[Groups(['posts_read'])]
+    private Collection $evaluations;
+
+   
+    
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->updatedAt = new \DateTimeImmutable();
         $this->thumbnails = new ArrayCollection();
+        $this->evaluations = new ArrayCollection();
     }
+
+    
 
 
     public function getContent(): ?string
@@ -168,4 +179,38 @@ class Post extends CommentableEntity
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, PostEvaluation>
+     */
+    public function getEvaluations(): Collection
+    {
+        return $this->evaluations;
+    }
+
+    public function addEvaluation(evaluation $evaluation): static
+    {
+        if (!$this->evaluations->contains($evaluation)) {
+            $this->evaluations->add($evaluation);
+            $evaluation->setPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvaluation(PostEvaluation $evaluation): static
+    {
+        if ($this->evaluations->removeElement($evaluation)) {
+            // set the owning side to null (unless already changed)
+            if ($evaluation->getPost() === $this) {
+                $evaluation->setPost(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+
+    
 }
